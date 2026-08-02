@@ -1,0 +1,78 @@
+# ---------------- Check Safe Position ----------------
+def is_safe(board, row, col):
+    # Check previously placed queens
+    for prev_row in range(row):
+        placed_col = board[prev_row]
+
+        # Same column
+        if placed_col == col:
+            return False
+
+        # Same diagonal
+        if abs(prev_row - row) == abs(placed_col - col):
+            return False
+
+    return True
+
+
+# ---------------- Solve N-Queens ----------------
+def solve_n_queens(n):
+    board = [-1] * n
+    solutions = []
+    backtrack_count = [0]
+
+    def backtrack(row):
+        # All queens are placed
+        if row == n:
+            solutions.append(board[:])
+            return
+
+        # Try each column
+        for col in range(n):
+            if is_safe(board, row, col):
+                board[row] = col
+                backtrack(row + 1)
+
+                # Remove queen (Backtrack)
+                board[row] = -1
+                backtrack_count[0] += 1
+
+    backtrack(0)
+
+    return solutions, backtrack_count[0]
+
+
+# ---------------- Display Chess Board ----------------
+def display_board(solution, n):
+
+    print(" +" + "---+" * n)
+
+    for row in range(n):
+        print(" |", end="")
+
+        for col in range(n):
+            if solution[row] == col:
+                print(" Q |", end="")
+            else:
+                print(" . |", end="")
+
+        print()
+        print(" +" + "---+" * n)
+
+
+# ---------------- Main Program ----------------
+for n in [4, 6, 8]:
+
+    solutions, backtracks = solve_n_queens(n)
+
+    print(f"\nN = {n}")
+    print(f"Number of Solutions : {len(solutions)}")
+    print(f"Backtracks          : {backtracks}")
+
+    # Display all solutions only for 4-Queens
+    if n == 4:
+        print("\nAll Solutions for 4-Queens:\n")
+
+        for i, solution in enumerate(solutions, start=1):
+            print(f"Solution {i}: {solution}")
+            display_board(solution, n)
